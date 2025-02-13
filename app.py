@@ -173,7 +173,8 @@ def render_specialty_forecasts(specialty, agg_df):
     spec_data["Month"] = pd.to_datetime(spec_data["Month"], format="%Y-%m")
     spec_data = spec_data.sort_values("Month").set_index("Month")
     st.write("#### Historical Aggregated Data")
-    st.dataframe(spec_data.style.format("{:.2f}"))
+    num_cols = spec_data.select_dtypes(include=[np.number]).columns.tolist()
+    st.dataframe(spec_data.style.format({col: "{:.2f}" for col in num_cols}))
     
     # Create sub-tabs for each measure.
     tabs = st.tabs(["Total PTL Size", "0–17 Weeks Group", "% Under 18 Weeks", "% Over 52 Weeks"])
@@ -254,7 +255,8 @@ def render_summary_forecast(forecast_periods=15):
         summary_df.index.name = "ForecastMonth"
         
         st.write("#### Aggregated Forecast Numbers (by Month)")
-        st.dataframe(summary_df.style.format("{:.2f}"))
+        num_cols_fc = forecast_df.select_dtypes(include=[np.number]).columns.tolist()
+        st.dataframe(forecast_df.style.format({col: "{:.2f}" for col in num_cols_fc}))
         csv_data = summary_df.to_csv().encode('utf-8')
         st.download_button("Export All Forecasts (CSV)", csv_data, file_name="summary_forecasts.csv", mime="text/csv")
         
