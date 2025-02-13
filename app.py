@@ -141,7 +141,8 @@ def render_forecast_panel(specialty, measure_key, historical_series, measure_lab
     
     # Show the forecast table.
     st.write("#### Forecast Numbers")
-    st.dataframe(forecast_df.style.format("{:.2f}"))
+    num_cols_fc = forecast_df.select_dtypes(include=[np.number]).columns.tolist()
+    st.dataframe(forecast_df.style.format({col: "{:.2f}" for col in num_cols_fc}))
     csv_data = forecast_df.to_csv().encode('utf-8')
     st.download_button("Download Forecast CSV", csv_data, file_name=f"{specialty}_{measure_key}_forecast.csv", mime="text/csv")
     
@@ -255,8 +256,8 @@ def render_summary_forecast(forecast_periods=15):
         summary_df.index.name = "ForecastMonth"
         
         st.write("#### Aggregated Forecast Numbers (by Month)")
-        num_cols_fc = forecast_df.select_dtypes(include=[np.number]).columns.tolist()
-        st.dataframe(forecast_df.style.format({col: "{:.2f}" for col in num_cols_fc}))
+        num_cols_fc = summary_df.select_dtypes(include=[np.number]).columns.tolist()
+        st.dataframe(summary_df.style.format({col: "{:.2f}" for col in num_cols_fc}))
         csv_data = summary_df.to_csv().encode('utf-8')
         st.download_button("Export All Forecasts (CSV)", csv_data, file_name="summary_forecasts.csv", mime="text/csv")
         
